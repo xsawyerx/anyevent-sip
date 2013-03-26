@@ -87,7 +87,7 @@ __END__
 =head1 DESCRIPTION
 
 This module allows L<Net::SIP> to work with L<AnyEvent> as the event loop,
-instead of its own event loop. This means you can combine them.
+instead of its own. This means you can combine them.
 
 While this is the implementation itself, you probably want to use
 L<AnyEvent::SIP> instead. You definitely want to read the documentation there
@@ -98,7 +98,7 @@ directly, the only method you care about is C<loop>.
 
 =head1 WARNING
 
-C<Net::SIP> requires dispatchers (event loops) to check their stopvars
+L<Net::SIP> requires dispatchers (event loops) to check their stopvars
 (condition variables) every single iteration of the loop. In my opinion, it's
 a wasteful and heavy operation. When it comes to loops like L<EV>, they run
 a B<lot> of cycles, and it's probably not very effecient. Take that under
@@ -109,7 +109,7 @@ we're using L<AnyEvent::AggressiveIdle>.
 
 =head1 INTERNAL ATTRIBUTES
 
-These attributes have no accessors, they are saved as intenral keys.
+These attributes have no accessors, they are saved as internal keys.
 
 =head2 _idle
 
@@ -144,10 +144,10 @@ to be read.
 
 Delete the watched file descriptor.
 
-=head2 add_timer($when, $cb_data, [$repeat])
+=head2 add_timer($when, $cb_data, [$repeat], [$name])
 
-Create a timer to run a callback at a certain point in time. If the point
-in time is rather large (3,600 * 24 * 365 and up), it's a specific point in
+Create a timer to run a callback at a certain point in time. If the time is
+considerably far (3,600 * 24 * 365 and up), it's a specific point in
 time. Otherwise, it's a number of seconds from now.
 
 The C<repeat> option is an optional interval for the timer.

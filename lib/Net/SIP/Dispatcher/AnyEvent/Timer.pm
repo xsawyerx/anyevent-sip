@@ -34,7 +34,7 @@ new timer.
 
 =head1 INTERNAL ATTRIBUTES
 
-These attributes are saved in a hash key and have no accessors.
+These attributes have no accessors, they are saved as internal keys.
 
 =head2 timer
 
@@ -42,7 +42,7 @@ The actual timer object
 
 =head1 METHODS
 
-=head2 new($when, $cb, $repeat)
+=head2 new($name, $when, $repeat, $cb_data)
 
 A constructor creating the new timer. You set when to start, the callback and
 how often to repeat.

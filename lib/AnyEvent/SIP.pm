@@ -19,6 +19,21 @@ __END__
 
 =head1 SYNOPSIS
 
+    # regular Net::SIP syntax
+    use AnyEvent::SIP;
+    use Net::SIP::Simple;
+
+    my $stopvar;
+    my $ua   = Net::SIP::Simple->new(...);
+    my $call = $uac->invite(
+        'you.uas@example.com',
+        cb_final => sub { $stopvar++ },
+    );
+
+    # wait for $stopvar, 5 second timeout
+    $ua->loop( 5, \$stopvar );
+
+    # AnyEvent-style
     use AnyEvent::SIP;
     use Net::SIP::Simple;
 
