@@ -9,7 +9,6 @@ use Net::SIP::Dispatcher::Eventloop;
 {
     no warnings qw<redefine once>;
     *Net::SIP::Dispatcher::Eventloop::new = sub {
-        warn "Faking Net::SIP::Dispatcher::Eventloop\n";
         Net::SIP::Dispatcher::AnyEvent->new
     };
 }
@@ -38,7 +37,7 @@ other supported event loop) for L<Net::SIP>.
 
 L<Net::SIP::Simple> allows you to define the event loop. You can either define
 it using L<Net::SIP::Dispatcher::AnyEvent> manually or you can simply use
-L<AnyEvent::SIP> which will automatically set it.
+L<AnyEvent::SIP> which will automatically set it for you.
 
     # doing it automatically and globally
     use AnyEvent::SIP;
