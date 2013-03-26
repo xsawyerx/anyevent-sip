@@ -84,6 +84,17 @@ locally.
     # which calls AnyEvent's instead
     $ua->loop( 1, \$stopvar );
 
+=head1 WARNING
+
+L<Net::SIP> requires dispatchers (event loops) to check their stopvars
+(condition variables) every single iteration of the loop. In my opinion, it's
+a wasteful and heavy operation. When it comes to loops like L<EV>, they run
+a B<lot> of cycles, and it's probably not very effecient. Take that under
+advisement.
+
+I would happily accept any suggestions on how to improve this. Meanwhile,
+we're using L<AnyEvent::AggressiveIdle>.
+
 =head1 AUTHOR
 
 Sawyer X <xsawyerx@cpan.org>
