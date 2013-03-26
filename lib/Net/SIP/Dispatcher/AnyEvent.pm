@@ -6,6 +6,7 @@ package Net::SIP::Dispatcher::AnyEvent;
 use AnyEvent;
 use AnyEvent::AggressiveIdle;
 use Net::SIP::Dispatcher::AnyEvent::Timer;
+use Net::SIP::Util 'invoke_callback';
 
 sub new {
     my $class = shift;
@@ -27,24 +28,25 @@ sub new {
 sub addFD {
     my $self = shift;
     my ( $fh, $cb_data, $name ) = @_;
-    my ( $cb, @cb_params ) = @{$cb_data};
 
-    $self->{'_fd_watchers'}{$fh} = AE::io $fh, 0, sub {
-        $cb->(@cb_params);
+    my $fn = fileno $fh or return;
+
+    $self->{'_fd_watchers'}{$fn} = AE::io $fh, 0, sub {
+        invoke_callback( $cb_data, $fh );
     }
 }
 
 sub delFD {
     my $self = shift;
     my $fh   = shift;
+    my $fn   = fileno $fh or return;
 
-    delete $self->{'_fd_watchers'}{$fh};
+    delete $self->{'_fd_watchers'}{$fn};
 }
 
 sub add_timer {
     my $self = shift;
-    my ( $when, $cb_data, $repeat ) = @_;
-    my ( $cb, @cb_params ) = @{$cb_data};
+    my ( $when, $cb_data, $repeat, $name ) = @_;
     defined $repeat or $repeat = 0;
 
     # is $when epoch or relative?
@@ -53,7 +55,7 @@ sub add_timer {
     }
 
     return Net::SIP::Dispatcher::AnyEvent::Timer->new(
-        $when, sub { $cb->(@cb_params) }, $repeat
+        $name, $when, $repeat, $cb_data
     );
 }
 

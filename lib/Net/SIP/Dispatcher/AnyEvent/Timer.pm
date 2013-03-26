@@ -4,11 +4,18 @@ package Net::SIP::Dispatcher::AnyEvent::Timer;
 # ABSTRACT: A timer object for Net::SIP::Dispatcher::AnyEvent
 
 use AnyEvent;
+use Net::SIP::Util 'invoke_callback';
 
 sub new {
     my $class = shift;
-    my ( $when, $cb, $repeat ) = @_;
-    return bless { timer => AE::timer $when, $repeat, $cb }, $class;
+    my ( $name, $when, $repeat, $cb ) = @_;
+    my $self  = bless {}, $class;
+
+    $self->{'timer'} = AE::timer $when, $repeat, sub {
+        invoke_callback( $cb, $self );
+    };
+
+    return $self;
 }
 
 sub cancel {
