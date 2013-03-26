@@ -19,7 +19,8 @@ __END__
 
 =head1 SYNOPSIS
 
-    use SNMP::AnyEvent;
+    use AnyEvent::SIP;
+    use Net::SIP::Simple;
 
     my $cv   = AE::cv;
     my $ua   = Net::SIP::Simple->new(...);
