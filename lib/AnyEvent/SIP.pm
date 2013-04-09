@@ -16,9 +16,14 @@ sub import {
             Net::SIP::Dispatcher::AnyEvent->new( _net_sip_compat => 1 )
         };
     } else {
+        my $interval;
+        if ( @args && $args[0] eq 'stopvar_interval' ) {
+            $interval = $args[1];
+        }
+
         no warnings qw<redefine once>;
         *Net::SIP::Dispatcher::Eventloop::new = sub {
-            Net::SIP::Dispatcher::AnyEvent->new( _ae_interval => $args[1] )
+            Net::SIP::Dispatcher::AnyEvent->new( _ae_interval => $interval )
         };
     }
 }

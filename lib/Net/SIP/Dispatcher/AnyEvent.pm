@@ -13,7 +13,7 @@ sub new {
     my %args  = @_;
     my $self  = bless {
         _cv          => AE::cv,
-        _ae_interval => $args{'_ae_interval'} || 0.02,
+        _ae_interval => $args{'_ae_interval'} || 0.2,
     }, $class;
 
     if ( $args{'_net_sip_compat'} ) {
