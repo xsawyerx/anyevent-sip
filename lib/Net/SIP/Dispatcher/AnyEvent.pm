@@ -4,23 +4,29 @@ package Net::SIP::Dispatcher::AnyEvent;
 # ABSTRACT: AnyEvent dispatcher for Net::SIP
 
 use AnyEvent;
-use AnyEvent::AggressiveIdle;
 use Net::SIP::Dispatcher::AnyEvent::Timer;
 use Net::SIP::Util 'invoke_callback';
+use AnyEvent::AggressiveIdle ();
 
 sub new {
     my $class = shift;
-    my $self  = bless { _cv => AE::cv }, $class;
+    my %args  = @_;
+    my $self  = bless {
+        _cv          => AE::cv,
+        _ae_interval => $args{'_ae_interval'} || 0.02,
+    }, $class;
 
-    $self->{'_idle'} = aggressive_idle {
-        exists $self->{'_stopvar'} or return;
-        foreach my $var ( @{ $self->{'_stopvar'} } ) {
-            if ( ${$var} ) {
-                delete $self->{'_stopvar'};
-                $self->{'_cv'}->send;
+    if ( $args{'_net_sip_compat'} ) {
+        $self->{'_idle'} = AnyEvent::AggressiveIdle::aggressive_idle {
+            exists $self->{'_stopvar'} or return;
+            foreach my $var ( @{ $self->{'_stopvar'} } ) {
+                if ( ${$var} ) {
+                    delete $self->{'_stopvar'};
+                    $self->{'_cv'}->send;
+                }
             }
-        }
-    };
+        };
+    }
 
     return $self;
 }
@@ -66,6 +72,19 @@ sub loop {
     my ( $timeout, @stopvar ) = @_;
 
     $self->{'_stopvar'} = \@stopvar;
+
+    if ( ! $self->{'_net_sip_compat'} and @stopvar ) {
+        # set up a timer to check stopvars
+        $self->{'_stopvar_timer'} = AE::timer 0, $self->{'_ae_interval'}, sub {
+            foreach my $var (@stopvar) {
+                if ( ${$var} ) {
+                    delete $self->{'_stopvar_timer'};
+                    delete $self->{'_stopvar'};
+                    $self->{'_cv'}->send;
+                }
+            }
+        }
+    }
 
     if ($timeout) {
         my $timer; $timer = AE::timer $timeout, 0, sub {

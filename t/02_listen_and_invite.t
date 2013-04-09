@@ -84,7 +84,7 @@ sub uac {
 	ok( $call, 'Call established' );
 
     my $ran_ae;
-    my $t = AE::timer 0.5, 0, sub { $ran_ae++ };
+    my $t = AE::timer 0.01, 0, sub { $ran_ae++ };
 
 	$call->loop(1);
 

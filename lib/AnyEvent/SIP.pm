@@ -6,11 +6,21 @@ package AnyEvent::SIP;
 use Net::SIP::Dispatcher::AnyEvent;
 use Net::SIP::Dispatcher::Eventloop;
 
-{
-    no warnings qw<redefine once>;
-    *Net::SIP::Dispatcher::Eventloop::new = sub {
-        Net::SIP::Dispatcher::AnyEvent->new
-    };
+sub import {
+    my $class = shift;
+    my @args  = @_;
+
+    if ( @args && $args[0] eq 'compat' ) {
+        no warnings qw<redefine once>;
+        *Net::SIP::Dispatcher::Eventloop::new = sub {
+            Net::SIP::Dispatcher::AnyEvent->new( _net_sip_compat => 1 )
+        };
+    } else {
+        no warnings qw<redefine once>;
+        *Net::SIP::Dispatcher::Eventloop::new = sub {
+            Net::SIP::Dispatcher::AnyEvent->new( _ae_interval => $args[1] )
+        };
+    }
 }
 
 1;

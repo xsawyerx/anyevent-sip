@@ -5,7 +5,7 @@ use warnings;
 use Test::More tests => 12;
 do './testlib.pl' || do './t/testlib.pl' || die "no testlib";
 
-use AnyEvent::SIP;
+use AnyEvent::SIP 'compat';
 use Net::SIP ':all';
 use Net::SIP::SDP;
 use Data::Dumper;
