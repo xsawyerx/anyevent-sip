@@ -61,6 +61,10 @@ __END__
 
     $cv->recv;
 
+    # compat-mode
+    use AnyEvent::SIP 'compat';
+    ...
+
 =head1 DESCRIPTION
 
 This module allows you to use L<AnyEvent> as the event loop (and thus any
@@ -108,14 +112,27 @@ locally.
     # which calls AnyEvent's instead
     $ua->loop( 1, \$stopvar );
 
-=head1 WARNING
+=head1 COMPATIBILITY
 
 L<Net::SIP> requires dispatchers (event loops) to check their stopvars
 (condition variables) every single iteration of the loop. In my opinion, it's
 a wasteful and heavy operation. When it comes to loops like L<EV>, they run
-a B<lot> of cycles, and it's probably not very effecient. Take that under
-advisement.
+a B<lot> of cycles, and it's not very effecient and causes heavy load.
 
-I would happily accept any suggestions on how to improve this. Meanwhile,
-we're using L<AnyEvent::AggressiveIdle>.
+To avoid that, the default mode for L<AnyEvent::SIP> is to set up a timer
+to check the condition variables. Default interval is: B<0.2> seconds.
+
+To configure this, you can set up the interval on import:
+
+    use AnyEvent::SIP stopvar_interval => 0.1;
+    ...
+
+If you want to keep AnyEvent::SIP completely compatible with the L<Net::SIP>
+requirement (which fixes at least one bugfix test I haven't found out why yet),
+you can add the compat option on import;
+
+    use AnyEvent::SIP 'compat';
+    ...
+
+I can't promise not to change any of this.
 

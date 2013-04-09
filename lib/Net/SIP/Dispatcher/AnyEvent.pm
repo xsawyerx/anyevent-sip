@@ -117,14 +117,21 @@ directly, the only method you care about is C<loop>.
 
 =head1 WARNING
 
-L<Net::SIP> requires dispatchers (event loops) to check their stopvars
-(condition variables) every single iteration of the loop. In my opinion, it's
-a wasteful and heavy operation. When it comes to loops like L<EV>, they run
-a B<lot> of cycles, and it's probably not very effecient. Take that under
-advisement.
+The compatible mode of Net::SIP::Dispatcher::AnyEvent is pretty stressful on
+your CPU. Please read the compatibility mode section in L<AnyEvent::SIP>.
 
-I would happily accept any suggestions on how to improve this. Meanwhile,
-we're using L<AnyEvent::AggressiveIdle>.
+=head1 ATTRIBUTES
+
+=head2 _net_sip_compat
+
+Whether to be fully compatible with L<Net::SIP> with the expense of possible
+side-effects on the CPU load of your processes. Please read compatibility mode
+in L<AnyEvent::SIP>.
+
+=head2 _ae_interval
+
+In normal (non-compatible) mode, how often to check for stopvars.
+Default: B<0.2> seconds.
 
 =head1 INTERNAL ATTRIBUTES
 
@@ -145,6 +152,10 @@ Main condition variable allowing for looping.
 =head2 _fd_watchers
 
 All the watched file descriptors.
+
+=head2 _stopvar_timer
+
+Timer holding stopvar checking. Only for default non-compatible mode.
 
 =head1 METHODS
 
